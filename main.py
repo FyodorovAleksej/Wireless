@@ -3,6 +3,7 @@ import sys
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QTableWidgetItem, QAbstractItemView
 
 from WifiAdapter import WifiAdapter
@@ -103,10 +104,15 @@ class MyWin(QtWidgets.QMainWindow):
         # getting selected row
         indexes = self.ui.wifiTable.selectionModel().selectedRows()
         for index in sorted(indexes):
-            # eject selected device
-            message = self.wifiAdapter.connect(self.ui.wifiTable.item(index.row(), 0).text())
-            # print error message if can't eject device
-            self.errorInfo(message)
+
+            if (self.ui.wifiTable.item(index.row(), 0).background() == QColor(225, 125, 125)):
+                message = self.wifiAdapter.disconnect(self.ui.wifiTable.item(index.row(),0).text())
+                self.errorInfo(message)
+            else:
+                # eject selected device
+                message = self.wifiAdapter.connect(self.ui.wifiTable.item(index.row(), 0).text())
+                # print error message if can't eject device
+                self.errorInfo(message)
 
     def ping(self):
         # getting selected row
@@ -134,10 +140,10 @@ class MyWin(QtWidgets.QMainWindow):
         item4 = QTableWidgetItem(wifiInfo["security"])
         item4.setFlags(QtCore.Qt.ItemIsEnabled | Qt.ItemIsSelectable)
         if wifiInfo["use"]:
-            item1.setBackground(QtGui.QColor(225, 125, 125))
-            item2.setBackground(QtGui.QColor(225, 125, 125))
-            item3.setBackground(QtGui.QColor(225, 125, 125))
-            item4.setBackground(QtGui.QColor(225, 125, 125))
+            item1.setBackground(QColor(225, 125, 125))
+            item2.setBackground(QColor(225, 125, 125))
+            item3.setBackground(QColor(225, 125, 125))
+            item4.setBackground(QColor(225, 125, 125))
         # setting items
         table = self.ui.wifiTable
         if (row < table.rowCount()):

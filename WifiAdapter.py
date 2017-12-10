@@ -9,7 +9,7 @@ class WifiAdapter:
         wififile = open(os.getcwd() + "/wifi.txt", "r+")
         text = wififile.readlines()
         wififile.close()
-        text = text[1:]
+        text = text[0:]
         for line in text:
             if (not (line in wifiList)):
                 wifiList.append(line[:-1])
@@ -18,15 +18,18 @@ class WifiAdapter:
         wififile = open(os.getcwd() + "/wifi.txt", "r+")
         text = wififile.readlines()
         wififile.close()
-        text = text[1:]
+        text = text[0:]
         text = sorted(text)
         wifiList = sorted(wifiList)
         for line in text:
             for name in wifiList:
-                if ((name + " ") in line):
+                if (name != "" and (name + "  ") in line[0:20]):
                     wifiInfo = {"name": None, "security": None, "address": None, "quality": None, "use": False}
                     wifiInfo["name"] = name
-                    line = (line.split(name))[1]
+                    temp = (line.split(name))[1:]
+                    line = ""
+                    for txt in temp:
+                        line = line + txt
                     while line[0] == ' ':
                         line = line[1:]
                     wifiInfo["address"] = line[:17]
@@ -47,8 +50,13 @@ class WifiAdapter:
         return wifiInfoList
 
     def connect(self, name):
-        subprocess.call("nmcli connection up " + name, shell=True)
+        subprocess.call("nmcli dev connect wlp9s0", shell=True)
+        subprocess.call("nmcli device wifi connect " + name, shell=True)
         return "Connected to " + name
+
+    def disconnect(self, name):
+        subprocess.call("nmcli dev disconnect iface wlp9s0 " + name, shell=True)
+        return "Disconnected from " + name
 
     def ping(self, name):
         subprocess.call("ping -i 0.2 -c 1 bsuir.by > "+ os.getcwd() + "/ping.txt", shell=True)
