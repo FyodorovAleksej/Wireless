@@ -51,17 +51,20 @@ class WifiAdapter:
 
     def connect(self, name):
         subprocess.call("nmcli dev connect wlp9s0", shell=True)
-        subprocess.call("nmcli device wifi connect " + name, shell=True)
+        subprocess.call("nmcli device wifi connect \"" + name + "\"", shell=True)
         return "Connected to " + name
 
     def disconnect(self, name):
-        subprocess.call("nmcli dev disconnect iface wlp9s0 " + name, shell=True)
+        subprocess.call("nmcli dev disconnect iface wlp9s0 \"" + name + "\"", shell=True)
         return "Disconnected from " + name
 
     def ping(self, name):
         subprocess.call("ping -i 0.2 -c 1 bsuir.by > "+ os.getcwd() + "/ping.txt", shell=True)
         logfile = open(os.getcwd() + "/ping.txt", "r+")
         text = logfile.read()
-        text = text.split("--- bsuir.by ping statistics ---")[1]
+        if (text != ""):
+            text = text.split("--- bsuir.by ping statistics ---")[1]
+        else:
+            return "no ping"
         logfile.close()
         return text
